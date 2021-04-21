@@ -30,24 +30,24 @@ class Ship:
         """move the ship according to the moving flag"""
         if self.moving_right and self.rect.right < self.screen_rect.right:
             if self.speed_up:
-                self.x += self.settings.ship_speed
+                self.x += (self.settings.ship_speed * 1.5)
             else:
-                self.x += 1
+                self.x += self.settings.ship_speed
         if self.moving_left and self.rect.left > 0:
             if self.speed_up:
-                self.x -= self.settings.ship_speed
+                self.x -= (self.settings.ship_speed * 1.5)
             else:
-                self.x -= 1
+                self.x -= self.settings.ship_speed
         if self.moving_up and self.rect.top > 0:
             if self.speed_up:
-                self.y -= self.settings.ship_speed
+                self.y -= (self.settings.ship_speed * 1.5)
             else:
-                self.y -= 1
+                self.y -= self.settings.ship_speed
         if self.moving_down and self.rect.bottom < self.screen_rect.bottom:
             if self.speed_up:
-                self.y += self.settings.ship_speed
+                self.y += (self.settings.ship_speed * 1.5)
             else:
-                self.y += 1
+                self.y += self.settings.ship_speed
         self.rect.x = self.x
         self.rect.y = self.y
 
