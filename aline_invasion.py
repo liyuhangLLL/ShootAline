@@ -53,6 +53,7 @@ class AlineInvasion:
         # response the events of keyboard and mouse
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                self._record_high_score()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
@@ -66,8 +67,11 @@ class AlineInvasion:
         self.settings.initialize_dynamic_settings()
 
         # reset game statistic
+
         self.stats.reset_stats()
         self.sb.prep_score()
+        self.sb.prep_level()
+        self.sb.prep_ships()
         self.stats.game_active = True
 
         # hide the mouse
@@ -104,6 +108,7 @@ class AlineInvasion:
         elif event.key == pygame.K_p:
             self._start_game()
         elif event.key == pygame.K_q:
+            self._record_high_score()
             sys.exit()
 
     def _check_keyup_events(self, event):
@@ -156,12 +161,17 @@ class AlineInvasion:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
                 self.sb.prep_score()
+                self.sb.check_high_score()
 
         if not self.aliens:
             # delete existing bullets and create new group of aliens
             self.bullets.empty()
             self._create_fleet()
             self.settings.increase_speed()
+
+            # level up
+            self.stats.level += 1
+            self.sb.prep_level()
 
     def _update_aliens(self):
         """check if there are aliens outside the screen and update all aliens positions"""
@@ -220,6 +230,7 @@ class AlineInvasion:
         if self.stats.ships_left > 0:
             # ship_left - 1
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             # clear residual bullets and aline
             self.aliens.empty()
@@ -243,6 +254,9 @@ class AlineInvasion:
                 self._ship_hit()
                 break
 
+    def _record_high_score(self):
+        with open('data\high_score.txt', 'w') as f:
+            f.write(str(self.stats.high_score))
 
 if __name__ == '__main__':
     ai = AlineInvasion()
