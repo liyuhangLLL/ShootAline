@@ -9,6 +9,7 @@ from ship import Ship
 from bullet import Bullet
 from alien import Alien
 from button import Button
+from scoreboard import Scoreboard
 
 
 class AlineInvasion:
@@ -24,7 +25,9 @@ class AlineInvasion:
         pygame.display.set_caption('Aline Invasion')
 
         # store game information
+        # create score board
         self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
@@ -64,6 +67,7 @@ class AlineInvasion:
 
         # reset game statistic
         self.stats.reset_stats()
+        self.sb.prep_score()
         self.stats.game_active = True
 
         # hide the mouse
@@ -115,7 +119,7 @@ class AlineInvasion:
             self.ship.speed_up = False
 
     def _fire_bullet(self):
-        if len(self.bullets) < self.settings.bullet_allowed:
+        if len(self.bullets) < self.settings.bullet_allowed and self.stats.game_active:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
 
@@ -126,6 +130,9 @@ class AlineInvasion:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.aliens.draw(self.screen)
+
+        # show the score
+        self.sb.show_score()
 
         if not self.stats.game_active:
             self.play_button.draw_button()
@@ -145,7 +152,11 @@ class AlineInvasion:
         """respon to collisions between aliens and bullets"""
         # check whether are any bullets shoot the aliens
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
-        self.stats.aliens_killed += len(collisions)
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alien_points * len(aliens)
+                self.sb.prep_score()
+
         if not self.aliens:
             # delete existing bullets and create new group of aliens
             self.bullets.empty()

@@ -11,4 +11,4 @@ class GameStats:
     def reset_stats(self):
         """initialize the information which may change during the game"""
         self.ships_left = self.settings.ship_limits
-        self.aliens_killed = 0
+        self.score = 0
