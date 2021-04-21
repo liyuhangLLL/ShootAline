@@ -13,8 +13,6 @@ class GameStats:
             with open('data/high_score.txt', 'r') as f:
                 self.high_score = int(f.read().rstrip())
         except FileNotFoundError:
-            pass
-        else:
             self.high_score = 0
 
     def reset_stats(self):

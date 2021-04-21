@@ -1,5 +1,6 @@
 import sys
 from time import sleep
+import random
 
 import pygame
 
@@ -164,18 +165,23 @@ class AlineInvasion:
                 self.sb.check_high_score()
 
         if not self.aliens:
-            # delete existing bullets and create new group of aliens
-            self.bullets.empty()
-            self._create_fleet()
-            self.settings.increase_speed()
+            self._start_new_level()
 
-            # level up
-            self.stats.level += 1
-            self.sb.prep_level()
+    def _start_new_level(self):
+        """start new level"""
+        # delete existing bullets and create new group of aliens
+        self.bullets.empty()
+        self._create_fleet()
+        self.settings.increase_speed()
+
+        # level up
+        self.stats.level += 1
+        self.sb.prep_level()
 
     def _update_aliens(self):
         """check if there are aliens outside the screen and update all aliens positions"""
         self._check_fleet_edges()
+        # move aliens
         self.aliens.update()
 
         # detect collisions between ship and aliens
@@ -193,6 +199,7 @@ class AlineInvasion:
         available_space_x = self.settings.screen_width - (2 * alien_width)
         number_alien_x = available_space_x // (2 * alien_width)
 
+
         # calculate how many rows can store
         ship_height = self.ship.rect.height
         available_space_y = self.settings.screen_height - \
@@ -200,7 +207,11 @@ class AlineInvasion:
         number_rows = available_space_y // (2 * alien_height)
 
         for row_number in range(number_rows):
-            for alien_number in range(number_alien_x):
+            alien_number_x = random.randint(1, number_alien_x)
+            alien_order = list(range(alien_number_x))
+            random.shuffle(alien_order)
+            alien_order = alien_order[0: alien_number_x]
+            for alien_number in alien_order:
                 self._create_alien(alien_number, row_number)
 
     def _create_alien(self, alien_number, row_number):
@@ -255,8 +266,9 @@ class AlineInvasion:
                 break
 
     def _record_high_score(self):
-        with open('data\high_score.txt', 'w') as f:
+        with open('data/high_score.txt', 'w') as f:
             f.write(str(self.stats.high_score))
+
 
 if __name__ == '__main__':
     ai = AlineInvasion()
